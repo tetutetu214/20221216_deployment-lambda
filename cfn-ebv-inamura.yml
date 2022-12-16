@@ -47,7 +47,9 @@ Resources:
           bucket:
             name: 
               - !ImportValue cfn-s3-20221126-inamura
-          
+          object:
+            key:
+              - "prefix" : "aws"
       Targets:
         - Arn: !ImportValue cfn-lmd-inamura-arn
           Id: "cfn-lmd-inamura"
