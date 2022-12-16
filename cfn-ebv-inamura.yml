@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description:
+  EventBridge gets s3 events and sends them to lambda
+# ------------------------------------------------------------#
+#  Metadata
+# ------------------------------------------------------------#
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: "Eventbridge Configuration"
+        Parameters:
+          - Name
+          - EventBusName
+          - State
+# ------------------------------------------------------------#
+# Input Parameters
+# ------------------------------------------------------------# 
+Parameters:
+  EventBusName:
+    Type: String
+    Default: "default"
+  Name:
+    Type: String
+    Default: "cfn-SendLambdaS3Events-inamura"
+  State:
+    Type: String
+    Default: "ENABLED"
+
+# ------------------------------------------------------------#
+#  EventBridge
+# ------------------------------------------------------------#
+Resources:
+  S3EventsRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Get S3 events and send to Lambda"
+      EventBusName: !Ref EventBusName
+      Name: !Ref Name
+      State: !Ref State
+      EventPattern:
+        source: 
+          - aws.s3
+        detail-type:
+          - Object Created
+        detail:
+          bucket:
+            name: 
+              - !ImportValue cfn-s3-20221126-inamura
+          
+      Targets:
+        - Arn: !ImportValue cfn-lmd-inamura-arn
+          Id: "cfn-lmd-inamura"
+  
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: cfn-lmd-inamura
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt 'S3EventsRule.Arn'
