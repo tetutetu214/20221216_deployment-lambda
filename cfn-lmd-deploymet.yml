@@ -92,6 +92,7 @@ Resources:
             Action: "sts:AssumeRole"
             Principal:
               Service: lambda.amazonaws.com
+              
       Policies:
         - PolicyName: !Sub "${FunctionName}-policy"
           PolicyDocument:
@@ -104,6 +105,12 @@ Resources:
                   - "logs:CreateLogGroup"
                 Resource:  !Sub "arn:${AWS::Partition}:logs:*:*:*"
 
+              - Effect: "Allow"
+                Action:
+                  - "s3:*"
+                Resource: !Sub 
+                  - "arn:aws:s3:::${BucketName}"
+                  - BucketName: {'Fn::ImportValue': cfn-s3-20221126-inamura}
 # ------------------------------------------------------------#
 # Output Parameters
 # ------------------------------------------------------------#                
