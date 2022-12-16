@@ -49,7 +49,7 @@ Resources:
               - !ImportValue cfn-s3-20221126-inamura
           object:
             key:
-              - "prefix" : "aws"
+              - "prefix" : "aws-20221217"
       Targets:
         - Arn: !ImportValue cfn-lmd-inamura-arn
           Id: "cfn-lmd-inamura"

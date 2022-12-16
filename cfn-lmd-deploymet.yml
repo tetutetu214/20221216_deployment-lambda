@@ -54,24 +54,46 @@ Resources:
         ZipFile: |
           import boto3
           import os
-          import datetime
+          import urllib.parse
+          import zipfile
+          import glob
 
-          client = boto3.client('sns')
-          SNS = os.environ['SNS']
-          Subject = "【件名】SNS通知 "
-          Message = "S3にオブジェクトが作成されました"
-
+          s3 = boto3.client('s3')
+        
           def lambda_handler(event, context):
-              date = datetime.datetime.now()
-              d = date.strftime('%Y%m%d %H:%M:%S')
-
-              params = {
-              'TopicArn': SNS,
-              'Subject': Subject + str(d),
-              'Message': Message
-              }
+              FileListInZip = []
+              Object = urllib.parse.unquote_plus(event['detail']['object']['key'], encoding='utf-8')
+              Bucket = urllib.parse.unquote_plus(event['detail']['bucket']['name'], encoding='utf-8')
+              FilePath = '/tmp/' + Object
               
-              client.publish(**params)
+              #/tmp/配下保存
+              s3.download_file(Bucket, Object, FilePath)
+
+              #zipファイル内一覧取得
+              zfile = zipfile.ZipFile(FilePath)
+              FileListInZip = zfile.namelist()
+              
+              #/tmp/配下展開
+              zfile.extractall('/tmp/')
+              zfile.close()
+
+              #展開したファイルをS3アップロード
+              for f in FileListInZip:
+                  try:
+                      if os.path.isfile('/tmp/' + f):
+                          s3.upload_file('/tmp/'+f, Bucket, f)
+                  except Exception as e:
+                      print(e)
+                      pass
+              else:
+                  pass
+              
+              #Lambda /tmp/配下削除
+              for p in glob.glob('/tmp/' + '*'):
+                  if os.path.isfile(p):
+                      os.remove(p)
+
+              return 0
 
       Description: !Ref Description
       FunctionName: !Ref FunctionName
