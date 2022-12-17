@@ -23,10 +23,10 @@ Metadata:
 Parameters:
   FunctionName:
     Type: String
-    Default: "cfn-lmd-inamura"
+    Default: "cfn-lmd-deployment-inamura"
   Description:
     Type: String
-    Default: "cfn-lmd-inamura"
+    Default: "cfn-lmd-deployment-inamura"
   Handler:
     Type: String
     Default: "index.lambda_handler"
@@ -132,16 +132,16 @@ Resources:
                   - "s3:GetObject"
                   - "s3:PutObject"
                   - "s3:DeleteObject"
-              Resource: !Sub 
+                Resource: !Sub 
                   - "arn:aws:s3:::${BucketName}/*"
-                  - BucketName: {'Fn::ImportValue': cfn-s3-20221126-inamura}
+                  - BucketName: {'Fn::ImportValue': cfn-s3-BucketName}
 
               - Effect: "Allow"
                 Action:
                   - "s3:ListBucket"
-              Resource: !Sub 
+                Resource: !Sub 
                   - "arn:aws:s3:::${BucketName}"
-                  - BucketName: {'Fn::ImportValue': cfn-s3-20221126-inamura}
+                  - BucketName: {'Fn::ImportValue': cfn-s3-BucketName}
 
 # ------------------------------------------------------------#
 # Output Parameters

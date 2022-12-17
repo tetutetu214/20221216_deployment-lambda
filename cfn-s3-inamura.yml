@@ -23,7 +23,7 @@ Metadata:
 Parameters:
   S3BucketName:
     Type: String
-    Default: "cfn-s3-20221126-inamura"
+    Default: "cfn-s3-inamura"
     Description: Type of this BacketName.
   AccessControl:
     Type: String
@@ -93,4 +93,4 @@ Outputs:
   S3BucketName:
     Value: !Ref S3Bucket
     Export:
-      Name: !Ref S3BucketName
+      Name: cfn-s3-BucketName
