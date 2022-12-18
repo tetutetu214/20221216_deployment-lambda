@@ -22,7 +22,7 @@ Parameters:
     Default: "default"
   Name:
     Type: String
-    Default: "cfn-SendLambdaS3Events-inamura"
+    Default: "cfn-evb-deploymentlmd-inamura"
   State:
     Type: String
     Default: "ENABLED"
@@ -46,18 +46,18 @@ Resources:
         detail:
           bucket:
             name: 
-              - !ImportValue cfn-s3-20221126-inamura
+              - !ImportValue cfn-s3-BucketName
           object:
             key:
-              - "prefix" : "aws-20221217"
+              - "suffix" : ".zip"
       Targets:
-        - Arn: !ImportValue cfn-lmd-inamura-arn
-          Id: "cfn-lmd-inamura"
+        - Arn: !ImportValue cfn-lmd-deployment-inamura-arn
+          Id: "cfn-lmd-deployment-inamura"
   
   PermissionForEventsToInvokeLambda:
     Type: AWS::Lambda::Permission
     Properties:
-      FunctionName: cfn-lmd-inamura
+      FunctionName: cfn-lmd-deployment-inamura
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt 'S3EventsRule.Arn'

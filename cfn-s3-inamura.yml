@@ -23,8 +23,12 @@ Metadata:
 Parameters:
   S3BucketName:
     Type: String
-    Default: "cfn-s3-inamura"
+    Default: "cfn-s3-20221217-inamura"
     Description: Type of this BacketName.
+  VersioningConfiguration:
+    Type: String
+    Default: "Enabled"
+    Description: VersioningConfiguration.
   AccessControl:
     Type: String
     Description: AccessControl.
@@ -70,7 +74,9 @@ Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref S3BucketName
+      BucketName: !Ref S3BucketName      
+      VersioningConfiguration:
+        Status: !Ref VersioningConfiguration
       AccessControl: !Ref AccessControl
       PublicAccessBlockConfiguration:
         BlockPublicAcls: !Ref BlockPublicAcls
